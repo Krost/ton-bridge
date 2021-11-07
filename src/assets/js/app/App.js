@@ -30,7 +30,10 @@ namespace(
 
             computed: {
                 pageTitle() { return this.$route.meta.title; },
-                isTestNet() { return Config.isTestNet(); }
+                isTestNet() { return Config.isTestNet(); },
+                isExchangeRoute() {
+                    return [ '/eth', '/bsc' ].indexOf(this.$route.path) > -1;
+                }
             },
 
             async mounted() {

@@ -40,6 +40,7 @@ namespace(
                     balance()      { return Provider.balance;                            },
                     supported()    { return Config.network() === this.type;              },
                     networkName()  { return Config.get().name;                           },
+                    networkBlock() { return Provider.block;                              },
                     isTestNet()    { return Config.isTestNet();                          },
                     contractAddr() { return Config.contractAddr();                       },
                     contractLink() { return Config.contractLink();                       },

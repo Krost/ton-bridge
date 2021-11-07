@@ -23,21 +23,21 @@ namespace(
             balance:    { eth: 0, toncoin: 0 },
             interval:   {
                 network: 100,
-                balance: 100,
+                block:   5000,
             },
 
             async init() {
                 provider.ethereum = window.ethereum || null;
                 if (!provider.ethereum) { return; }
-
                 provider.web3 = new Web3(provider.ethereum);
-                provider.web3.eth.subscribe('newBlockHeaders').on('data', provider.updateBlock);
 
-                // Need to use this updates method for other wallets (like Trust Wallet)
+                // Need to use this updates method for other wallets (like Trust Wallet, Opera)
                 provider.updateNetwork();
                 provider.updateAccounts();
+                provider.updateBlock();
 
-                // This is not working in Trust Wallet
+                // This is not working in Trust Wallet, Opera
+                //provider.web3.eth.subscribe('newBlockHeaders').on('data', provider.updateBlock);
                 //provider.ethereum.on('chainChanged', provider.updateNetwork);
                 //provider.ethereum.on('accountsChanged', provider.updateAccounts);
                 //provider.updateNetwork(await provider.ethereum.request({ method: 'eth_chainId' }));
@@ -73,12 +73,18 @@ namespace(
                 });
             },
 
-            updateBlock(block) {
-                provider.block = block.number;
-                provider.$emit(':update:block', block.number);
-                provider.updateGasPrice();
-                provider.updateBalance();
-                provider.updateBalanceContract();
+            updateBlock() {
+                provider.web3.eth.getBlockNumber((error, result) => {
+                    setTimeout(provider.updateBlock, provider.interval.block);
+                    if (error) return console.log(error);
+                    if (provider.block !== result) {
+                        provider.block = result;
+                        provider.$emit(':update:block', provider.block);
+                        provider.updateGasPrice();
+                        provider.updateBalance();
+                        provider.updateBalanceContract();
+                    }
+                });
             },
 
             async updateContract(abi, address) {

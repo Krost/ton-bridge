@@ -80,6 +80,9 @@ namespace('app.Config', {
     network() {
         return (this.get() || {}).network || null;
     },
+    tokenType() {
+        return this.isEthNetwork() ? 'ERC20' : 'BEP-20';
+    },
 
     isConfigAddress(address) {
         address = address.toLowerCase();
