@@ -1,0 +1,14 @@
+@for $i from 0 through 100 {
+    .mt-#{$i}px {
+        margin-top: #{$i}px !important;
+    }
+    .mb-#{$i}px {
+        margin-bottom: #{$i}px !important;
+    }
+    .ml-#{$i}px {
+        margin-left: #{$i}px !important;;
+    }
+    .mr-#{$i}px {
+        margin-right: #{$i}px !important;;
+    }
+}

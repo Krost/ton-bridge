@@ -1,0 +1,89 @@
+.left-side {
+    border-right: solid 2px rgba($color-black, 0.07);
+    padding:      32px;
+
+
+    .logo {
+        text-decoration: none;
+        color:           inherit;
+        display:         flex;
+        align-items:     center;
+        justify-content: flex-end;
+
+        img {
+            width:        46px;
+            margin-right: 10px;
+        }
+
+        &:after {
+            content:     "TON Bridge";
+            font-weight: bold;
+            font-size:   22px;
+            white-space: nowrap;
+        }
+    }
+
+    nav#menu {
+        margin-top: 42px;
+        text-align: right;
+
+        input[type=checkbox] {
+            opacity:  0;
+            position: absolute;
+        }
+        input[type=checkbox] + ul + label {
+            display: none;
+        }
+
+        .menu-label {
+            font-size:   24px;
+            line-height: 46px;
+        }
+
+        ul {
+            list-style: none;
+            margin:     0;
+            padding:    0;
+
+            li {
+                a {
+                    border-right:    solid 2px transparent;
+                    display:         block;
+                    font-size:       18px;
+                    line-height:     28px;
+                    padding:         6px 32px 6px 0;
+                    margin-right:    -34px;
+                    text-decoration: none;
+                    color:           inherit;
+                    white-space:     nowrap;
+
+                    &:hover {
+                        color:        rgba($color-text, 0.8);
+                        border-color: rgba($color-black, 0.07);
+                    }
+                }
+
+                &.active {
+                    a {
+                        color:        $color-link;
+                        border-color: $color-link;
+                    }
+                }
+
+                &:nth-child(3) {
+                    margin-top: 40px;
+                }
+            }
+        }
+    }
+
+    .footer-info {
+        color:      $color-text-dark;
+        text-align: right;
+        font-size:  11px;
+
+        a {
+            color: inherit;
+        }
+    }
+}

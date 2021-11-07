@@ -1,0 +1,149 @@
+/* Fonts and font sizes start */
+@font-face {
+    font-family: 'mulish';
+    src:         url('/assets/fonts/Mulish-Black.ttf') format('truetype');
+    font-weight: normal;
+    font-style:  normal;
+}
+
+@font-face {
+    font-family: 'mulish';
+    src:         url('/assets/fonts/Mulish-ExtraBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style:  normal;
+}
+
+@font-face {
+    font-family: 'mulish';
+    src:         url('/assets/fonts/Mulish-Bold.ttf') format('truetype');
+    font-weight: 600;
+    font-style:  normal;
+}
+
+@font-face {
+    font-family: 'mulish';
+    src:         url('/assets/fonts/Mulish-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style:  normal;
+}
+
+@font-face {
+    font-family: 'code';
+    src:         url('/assets/fonts/SourceCodePro-Light.otf') format('opentype');
+    font-weight: normal;
+    font-style:  normal;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    color:       $color-text;
+    font-family: 'mulish';
+    font-size:   16px;
+    height:      100%;
+    display:     flex;
+    overflow-y:  scroll;
+}
+
+h1 {
+    font-size:   22px;
+    line-height: 46px;
+}
+
+hr {
+    opacity:          1;
+    background-color: rgba($color-black, 0.07);
+}
+
+input:focus, button:active:focus {
+    box-shadow: 0 0 0 2px rgba($color-button, 0.2) !important;
+}
+
+input[type="number"] {
+    -webkit-appearance: textfield;
+    -moz-appearance:    textfield;
+    appearance:         textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.progress-bar {
+    border-radius:    4px;
+    background-color: $color-button;
+}
+
+.btn-primary {
+    display:          block;
+    width:            100%;
+    padding:          14px 20px;
+    line-height:      28px;
+    border-width:     0;
+    background-color: $color-button;
+    box-shadow:       none;
+    outline:          none;
+
+    &.btn-sm {
+        font-size: 13px;
+        padding:   6px 10px;
+    }
+
+    &:disabled, &[disabled] {
+        background-color: $color-button;
+        opacity:          0.4;
+    }
+
+    &:active, &:focus {
+        background-color: $color-button;
+    }
+
+    &:hover {
+        background-color: rgba($color-button, 0.8);
+    }
+}
+
+a {
+    color: $color-link;
+    &:hover {
+        color: rgba($color-link, 0.8);
+    }
+}
+
+a.td-none {
+    text-decoration: none;
+}
+
+a.sm-link {
+    font-size: 13px;
+}
+
+small {
+    font-size: 13px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.cb-copy {
+    transition: all 200ms;
+}
+
+.cb-copied {
+    color:       $color-link;
+    text-shadow: 0 0 5px $color-link;
+}
+
+#loader {
+    align-self: center;
+    text-align: center;
+    flex-grow:  1;
+}
+
+#app {
+    display: none;
+}

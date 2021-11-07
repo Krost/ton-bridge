@@ -1,0 +1,211 @@
+<div id="app">
+    <div class="container-fluid" id="app">
+        <div class="row">
+            <div class="col-xl-2 col-lg-2 col-md-1 d-none d-md-block"></div>
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-12 left-side">
+                <div class="d-flex flex-sm-column h-100">
+                    <div><a href="/" class="logo"><img src="/assets/img/logo.svg" alt=""></a></div>
+                    <nav id="menu">
+                        <label for="menuState" class="menu-label d-sm-none"><i class="fe fe-menu"></i></label>
+                        <input type="checkbox" id="menuState" />
+                        <ul>
+                            <router-link v-for="item in menu" :key="item.id" :to="item.href" custom v-slot="{ href, route, navigate, isActive }">
+                                <li :class="[ isActive && 'active' ]"><a :href="href" @click="navigate" v-text="item.title"></a></li>
+                            </router-link>
+                        </ul>
+                        <label for="menuState"></label>
+                    </nav>
+                    <div class="mt-auto d-none d-sm-block footer-info">
+                        version: <span v-text="appVersion"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-5 col-md-6 col-sm-7 main-content">
+                <h1 class="headline"><span v-text="pageTitle"></span> <sup v-if="isTestNet">testnet</sup></h1>
+                <router-view></router-view>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="eth">
+    <div class="exchange-form">
+        <form id="exchangeForm" @submit.prevent="submit">
+            <p>Amount of TON:<a href="#" class="exchange-max" v-if="direction < 0 && supported" @click.prevent="setMaxValue">[ set max ]</a></p>
+            <div class="form-group">
+                <input type="number" name="from" :disabled="state.step > 0" class="form-control from-ton" placeholder="0.00" step="0.000001" v-model="form.from" @input="updateFee('from')" /><label v-text="fromLabel"></label>
+            </div>
+            <a href="#" class="change-direction" :class="state.step > 0 ? 'disabled' : ''" tabindex="-1" @click.prevent="changeDirection"><i class="fe fe-repeat"></i></a>
+            <div class="form-group mb-30px">
+                <input type="number" name="to" :disabled="state.step > 0" class="form-control to-ton" placeholder="0.00" step="0.000001" v-model="form.to" @input="updateFee('to')" /><label v-text="toLabel"></label>
+            </div>
+
+            <div class="text-center" v-if="!$parent.ready">
+                <div class="lds-dual-ring"></div>
+            </div>
+
+            <div class="text-center" v-else-if="!metamask">
+                <b class="text-danger">Metamask is not installed</b><br />
+                Please <a href="https://metamask.io/download.html" target="_blank">install Metamask</a> and reload page.
+            </div>
+
+            <div class="text-center" v-else-if="!connected">
+                <b class="text-danger">Metamask is locked or not connected</b>
+                <button type="button" class="btn btn-primary mt-30px" @click="connect" :disabled="connecting">Connect metamask</button>
+            </div>
+
+            <div class="text-center" v-else-if="!supported">
+                <div v-if="isTypeEth">Please select <b>Ethereum Mainnet</b> in Metamask</div>
+                <div v-else>
+                    Please select <b>Binance Smart Chain</b> in Metamask<br /><br />
+                    <a href="https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain" target="_blank">How to add BSC to Metamask</a>
+                </div>
+            </div>
+
+            <div v-else-if="supported">
+                <div class="form-group">
+                    <label class="mb-10px">Address to receive in <span v-text="receiverNetwork"></span> Network:</label>
+                    <input type="text" name="address" :disabled="state.step > 0" class="form-control" required v-model="form.address" />
+                </div>
+                <div class="form-error" v-if="form.error.length > 0" v-text="form.error"></div>
+                <button type="submit" class="btn btn-primary mt-30px" v-if="state.step === 0">Transfer</button>
+
+                <div class="pending" v-if="state.step > 0">
+                    <div class="line" :class="stateStepClass(1)">
+                        <div class="icon">
+                            <div class="lds-dual-ring small"></div>
+                            <i class="fe fe-check"></i>
+                            <i class="fe fe-clock"></i>
+                        </div>
+                        <div class="text">
+                            <b v-if="state.step <= 1 && !state.burned">Please send <span v-text="state.amount"></span> TON Coins to bridge contract</b>
+                            <b v-else-if="state.step <= 1 && state.burned">Please wait for the transaction to be processed</b>
+                            <b v-else>Transaction completed successfully</b>
+                            <div v-if="state.direction > 0 && state.step === 1">
+                                <a :href="transferLink" class="btn btn-primary btn-sm mt-2">Open transfer in wallet <i class="fe fe-external-link"></i></a>
+                                <small>
+                                    <div class="text-center mt-3">or use this data</div>
+                                    <div class="mt-3">
+                                        <b>address:</b><br />
+                                        <a href="#" @click.prevent="clipboardThis" class="cb-copy"><span v-text="transferAddress"></span>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br /><br />
+                                        <b>amount:</b><br />
+                                        <a href="#" @click.prevent="clipboardThis" class="cb-copy"><span v-text="transferAmount"></span>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br /><br />
+                                        <b>comment:</b><br />
+                                        <a href="#" @click.prevent="clipboardThis" class="cb-copy"><span v-text="decodeURI(transferComment)"></span>&nbsp;&nbsp;<i class="fe fe-copy"></i></a>
+                                    </div>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="line" :class="stateStepClass(2)">
+                        <div class="icon">
+                            <div class="lds-dual-ring small"></div>
+                            <i class="fe fe-check"></i>
+                            <i class="fe fe-clock"></i>
+                        </div>
+                        <div class="text">
+                            <b v-if="state.step < 2">Wait a bit for the oracles to confirm the transfer</b>
+                            <b v-else-if="state.step === 2" v-text="swapProgressText"></b>
+                            <b v-else>The confirmations of the oracles are collected</b>
+                            <div v-if="state.step === 2" class="mt-4px">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" :style="'width: ' + swapProgressValue + '%'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="line" :class="stateStepClass(3)">
+                        <div class="icon">
+                            <div class="lds-dual-ring small"></div>
+                            <i class="fe fe-check"></i>
+                            <i class="fe fe-clock"></i>
+                        </div>
+                        <div class="text" v-if="state.direction > 0">
+                            <b v-if="state.step === 3 && state.minted">Please wait for the transaction to be processed</b>
+                            <b v-else-if="state.step === 3 && !state.minted">Get TONCOINs by Metamask</b>
+                            <b v-else-if="state.step > 3">TONCOINs have been sent to your address</b>
+                            <b v-else>Get TONCOINs in <span v-text="networkName"></span></b>
+                        </div>
+                        <div class="text" v-if="state.direction < 0">
+                            <b v-if="state.step > 3">TONs have been sent to your address</b>
+                            <b v-else>Get TONCOINs in <span v-text="isTestNet ? 'TON Testnet' : 'TON Network'"></span></b>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary mt-30px" v-if="state.direction > 0 && state.step === 1" @click="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary mt-30px" :disabled="minting" v-if="state.direction > 0 && state.step === 3 && !state.minted" @click="mint">Get TONCOIN</button>
+                    <button type="button" class="btn btn-primary mt-30px" v-if="state.step > 3" @click="cancel">Done</button>
+                </div>
+
+                <div class="network-info mt-50px">
+                    <hr class="mb-30px mt-0" />
+
+                    <b class="mb-4px d-block">Account</b>
+                    <p class="info">
+                        <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy"><b v-text="account"></b>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+                        Balance: <b class="account-balance"><span v-text="balance.eth">0</span> <span v-text="isTypeEth ? 'ETH' : 'BNB'"></span>, <span v-text="balance.toncoin">0</span> TONCOIN</b>
+                    </p>
+
+                    <b class="mb-4px d-block">Information about fee</b>
+                    <p class="info">
+                        GAS fee <b>~<span v-text="feeGas"></span> <span v-text="typeName"></span></b><br />
+                        Bridge fee <b v-text="feeString">5 TON + 0.25% of amount</b><br />
+                    </p>
+
+                    <b class="mb-4px d-block">Network</b>
+                    <p class="info">
+                        <span v-text="networkName"></span><br />
+                        <a :href="contractLink" target="_blank">Toncoin contract address</a>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="about">
+    <div>
+        <div class="mb-20px">
+            This is a third-party TON Bridge application made with using original bridge source code.
+        </div>
+
+        <a href="https://toncoin.org/how-it-works/bridge" target="_blank" class="sm-link">How bridge works</a>,
+        <a href="https://github.com/newton-blockchain/TIPs/issues/24" target="_blank" class="sm-link">Documentation</a><br /><br />
+
+        <h2 class="mb-4px">Application source code</h2>
+        <a href="https://github.com/Krost/ton-bridge" target="_blank" class="sm-link">https://github.com/Krost/ton-bridge</a><small>, last version: <span v-text="appVersion"></span></small><br /><br />
+
+        <h2 class="mb-4px">Original TON Bridge application</h2>
+        <a href="https://ton.org/bridge/" target="_blank" class="sm-link">https://ton.org/bridge/</a><br /><br />
+
+        <h2 class="mb-4px">Notes and suggestions</h2>
+        <a href="https://t.me/devmeats" target="_blank" class="sm-link">Write in Telegram</a>
+    </div>
+</div>
+
+<div id="donate">
+    <div>
+        <div class="mb-20px">
+            If you want to support application development, you can send cryptocurrency to the author.
+        </div>
+
+        <h2 class="mb-4px">Send TON</h2>
+        <a href="ton://transfer/EQAJ61QVlyCUwtbhkSjHTfQmNVpCoVc4SthJbJaWM6OL-L--" class="sm-link">Use TON native transfer</a><br />
+        <p class="info mt-6px mb-0px">
+            <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy sm-link">EQAJ61QVlyCUwtbhkSjHTfQmNVpCoVc4SthJbJaWM6OL-L--&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br /><br />
+        </p>
+        <h2 class="mb-4px">Via CryptoBot</h2>
+        <a href="http://t.me/CryptoBot?start=IV0BKG9kVJ9s" target="_blank" class="sm-link">Send with Telegram</a><br /><br />
+        <h2 class="mb-4px">Or another different ways</h2>
+        <p class="info">
+            <b>BTC</b><br />
+            &nbsp;&nbsp;<a href="#" @click.prevent="clipboardThis" class="td-none cb-copy sm-link">bc1q0w0tmlp6snn4e882npvkcssspw0tdqm2kmd2dg&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+            <b>ETH</b><br />
+            &nbsp;&nbsp;<a href="#" @click.prevent="clipboardThis" class="td-none cb-copy sm-link">0xa40183F96eB7b128F4E945F0400773a0E806c934&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+            <b>BNB</b><br />
+            &nbsp;&nbsp;<a href="#" @click.prevent="clipboardThis" class="td-none cb-copy sm-link">0x58f1AFbE040FE1a79EFfaB099A05F267D4cB74c6&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+        </p>
+    </div>
+</div>
