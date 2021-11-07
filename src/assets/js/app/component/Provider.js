@@ -21,43 +21,62 @@ namespace(
             block:      0,
             gasprice:   0,
             balance:    { eth: 0, toncoin: 0 },
+            interval:   {
+                network: 100,
+                balance: 100,
+            },
 
             async init() {
                 provider.ethereum = window.ethereum || null;
                 if (!provider.ethereum) { return; }
 
                 provider.web3 = new Web3(provider.ethereum);
-
-                provider.ethereum.on('chainChanged', provider.updateNetwork);
-                provider.ethereum.on('accountsChanged', provider.updateAccounts);
                 provider.web3.eth.subscribe('newBlockHeaders').on('data', provider.updateBlock);
 
-                provider.updateNetwork(await provider.ethereum.request({ method: 'eth_chainId' }));
-                provider.updateAccounts(await provider.ethereum.request({ method: 'eth_accounts' }));
+                // Need to use this updates method for other wallets (like Trust Wallet)
+                provider.updateNetwork();
+                provider.updateAccounts();
+
+                // This is not working in Trust Wallet
+                //provider.ethereum.on('chainChanged', provider.updateNetwork);
+                //provider.ethereum.on('accountsChanged', provider.updateAccounts);
+                //provider.updateNetwork(await provider.ethereum.request({ method: 'eth_chainId' }));
+                //provider.updateAccounts(await provider.ethereum.request({ method: 'eth_accounts' }));
             },
 
-            updateNetwork(chain_id) {
-                chain_id = parseInt(chain_id, 16);
-                if (provider.chain_id !== chain_id) {
-                    provider.chain_id = chain_id;
-                    provider.$emit(':update:chain', chain_id);
-                    provider.updateBalance();
-                    provider.updateGasPrice();
-                }
+            updateNetwork() {
+                provider.web3.eth.net.getId((error, result) => {
+                    setTimeout(provider.updateNetwork, provider.interval.network);
+                    if (error) return console.log(error);
+                    result = parseInt(result);
+                    if (provider.chain_id !== result) {
+                        provider.chain_id = result;
+                        provider.$emit(':update:chain', provider.chain_id);
+                        provider.updateBalance();
+                        provider.updateGasPrice();
+                    }
+                });
+            },
+
+            updateAccounts() {
+                provider.web3.eth.getAccounts((error, result) => {
+                    setTimeout(provider.updateAccounts, provider.interval.network);
+                    if (error) return console.log(error);
+                    let account = (result[0] || null).toString().toLowerCase();
+                    if (provider.account !== account) {
+                        provider.account = account;
+                        provider.$emit(':update:account', provider.account);
+                        provider.updateBalance();
+                        provider.updateBalanceContract();
+                    }
+                    provider.connected = !!provider.account;
+                });
             },
 
             updateBlock(block) {
                 provider.block = block.number;
                 provider.$emit(':update:block', block.number);
                 provider.updateGasPrice();
-                provider.updateBalance();
-                provider.updateBalanceContract();
-            },
-
-            updateAccounts(accounts) {
-                provider.connected = accounts.length > 0 && accounts[0] === provider.ethereum.selectedAddress;
-                provider.account = accounts[0];
-                provider.$emit(':update:account', provider.account);
                 provider.updateBalance();
                 provider.updateBalanceContract();
             },

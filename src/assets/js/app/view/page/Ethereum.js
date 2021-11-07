@@ -41,6 +41,7 @@ namespace(
                     supported()    { return Config.network() === this.type;              },
                     networkName()  { return Config.get().name;                           },
                     isTestNet()    { return Config.isTestNet();                          },
+                    contractAddr() { return Config.contractAddr();                       },
                     contractLink() { return Config.contractLink();                       },
                     feeString()    { return this.getFeeString(this.fee.result);          },
                     feeGas()       { return Bridge.getFeeGas(this.type, this.direction); },
@@ -102,7 +103,8 @@ namespace(
                         return 'Collected ' + this.swapOraclesNow + '/' + this.swapOraclesNeed + ' confirmations of oracles';
                     },
                     swapConfirmations() {
-                        return Provider.block - this.state.block;
+                        let confirmations = Provider.block - this.state.block;
+                        return confirmations >= 0 ? confirmations : 0;
                     },
                     swapConfirmationsText() {
                         return 'Collected ' + this.swapConfirmations + '/' + Provider.confirms + ' transaction confirmations';
@@ -178,9 +180,9 @@ namespace(
                     },
 
                     updateFromState() {
-                        this.direction    = this.state.direction || this.direction;
-                        this.form.from    = this.state.amount    || this.form.from;
-                        this.form.address = this.state.address   || this.form.address;
+                        this.direction    = this.state.direction || 1;
+                        this.form.from    = this.state.amount    || '';
+                        this.form.address = this.state.address   || '';
                         this.updateFee('from');
                     },
 

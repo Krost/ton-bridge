@@ -69,6 +69,10 @@ namespace('app.Config', {
     isSupported() {
         return !!this.get();
     },
+    contractAddr() {
+        if (!this.isSupported()) { return ''; }
+        return this.get().wton_address;
+    },
     contractLink() {
         if (!this.isSupported()) { return ''; }
         return this.get().explorer + this.get().wton_address;

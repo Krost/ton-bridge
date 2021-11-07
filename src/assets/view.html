@@ -50,14 +50,14 @@
             </div>
 
             <div class="text-center" v-else-if="!connected">
-                <b class="text-danger">Metamask is locked or not connected</b>
+                <b class="text-danger">Wallet is locked or not connected</b>
                 <button type="button" class="btn btn-primary mt-30px" @click="connect" :disabled="connecting">Connect metamask</button>
             </div>
 
             <div class="text-center" v-else-if="!supported">
-                <div v-if="isTypeEth">Please select <b>Ethereum Mainnet</b> in Metamask</div>
+                <div v-if="isTypeEth">Please change network to<br /><b>Ethereum Mainnet</b></div>
                 <div v-else>
-                    Please select <b>Binance Smart Chain</b> in Metamask<br /><br />
+                    Please change network to<br /><b>Binance Smart Chain</b><br /><br />
                     <a href="https://academy.binance.com/en/articles/connecting-metamask-to-binance-smart-chain" target="_blank">How to add BSC to Metamask</a>
                 </div>
             </div>
@@ -157,6 +157,7 @@
                     <b class="mb-4px d-block">Network</b>
                     <p class="info">
                         <span v-text="networkName"></span><br />
+                        <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy"><b v-text="contractAddr"></b>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
                         <a :href="contractLink" target="_blank">Toncoin contract address</a>
                     </p>
                 </div>
