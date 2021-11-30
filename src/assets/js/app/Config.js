@@ -8,7 +8,7 @@ namespace('app.Config', {
         bridge_address:    'Ef_dJMSh8riPi3BTUTtcxsWjG8RLKnLctNjAM4rw8NN-xWdr',
         collector_address: 'EQCuzvIOXLjH2tv35gY4tzhIvXCqZWDuK9kUhFGXKLImgxT5',
         multisig_address:  'kf8rV4RD7BD-j_C-Xsu8FBO9BOOOwISjNPbBC8tcq688Gcmk',
-        toncenter_url:     'https://toncenter.com/api/v2/jsonRPC',
+        toncenter_url:     'https://tonchain.co/api/v2/jsonRPC',
         explorer:          'https://etherscan.io/token/',
     },
 
@@ -33,8 +33,8 @@ namespace('app.Config', {
         wton_address:      '0x76A797A59Ba2C17726896976B7B3747BfD1d220f',
         bridge_address:    'Ef9NXAIQs12t2qIZ-sRZ26D977H65Ol6DQeXc5_gUNaUys5r',
         collector_address: 'EQAHI1vGuw7d4WG-CtfDrWqEPNtmUuKjKFEFeJmZaqqfWTvW',
-        multisig_address:  'kf8_gV8rpqtPl1vmYDrMzwxlGQDJ63SIKO8vDhNZHT5wwVhd',
-        toncenter_url:     'https://toncenter.com/api/v2/jsonRPC',
+        multisig_address:  'kf8OvX_5ynDgbp4iqJIvWudSEanWo0qAlOjhWHtga9u2Yo7j',
+        toncenter_url:     'https://tonchain.co/api/v2/jsonRPC',
         explorer:          'https://bscscan.com/token/',
     },
 
@@ -46,7 +46,7 @@ namespace('app.Config', {
         wton_address:      '0xA345a7C8d88279165214f6dA6e857041902955C5',
         bridge_address:    'Ef9NXAIQs12t2qIZ-sRZ26D977H65Ol6DQeXc5_gUNaUys5r',
         collector_address: 'EQAHI1vGuw7d4WG-CtfDrWqEPNtmUuKjKFEFeJmZaqqfWTvW',
-        multisig_address:  'kf-WJS6zJq8t02yQAGhHpdokmHTuKBjU44z4BV3hXANNifC2',
+        multisig_address:  '0f-a7dEc5xG4x2sWIzfYMzUvtUEFkcPKmhY6bzEFh-Bib2Eu',
         toncenter_url:     'https://testnet.toncenter.com/api/v2/jsonRPC',
         explorer:          'https://testnet.bscscan.com/token/',
     },
