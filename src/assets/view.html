@@ -142,9 +142,15 @@
                 <div class="network-info mt-50px">
                     <hr class="mb-30px mt-0" />
 
-                    <b class="mb-4px d-block">Account</b>
+                    <b class="mb-4px d-block" v-if="!!account.ton">Account TON</b>
+                    <p class="info" v-if="!!account.ton">
+                        <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy"><b v-text="account.ton"></b>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+                        Balance: <b class="account-balance"><span v-text="balance.ton">0</span> TON</b>
+                    </p>
+
+                    <b class="mb-4px d-block">Account <span v-text="typeName"></span></b>
                     <p class="info">
-                        <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy"><b v-text="account"></b>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
+                        <a href="#" @click.prevent="clipboardThis" class="td-none cb-copy"><b v-text="account.eth"></b>&nbsp;&nbsp;<i class="fe fe-copy"></i></a><br />
                         Balance: <b class="account-balance"><span v-text="balance.eth">0</span> <span v-text="isTypeEth ? 'ETH' : 'BNB'"></span>, <span v-text="balance.toncoin">0</span> TONCOIN</b>
                     </p>
 

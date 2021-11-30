@@ -151,7 +151,7 @@ namespace(
 
                     Debug.log('voteForMinting', JSON.stringify(swap), JSON.stringify(signatures));
                     receipt = await Provider.contract.methods.voteForMinting(swap, signatures).send({
-                        from: Provider.account
+                        from: Provider.account.eth
                     }).on('transactionHash', hash => {
                         Provider.$emit(':bridge:minted');
                     });
@@ -163,7 +163,7 @@ namespace(
             },
 
             async burn(amount, toAddress) {
-                const fromAddress = Provider.account;
+                const fromAddress = Provider.account.eth;
                 const addressTon  = new TonWeb.utils.Address(toAddress);
                 const workchain   = addressTon.wc;
                 const hashPart    = TonWeb.utils.bytesToHex(addressTon.hashPart);

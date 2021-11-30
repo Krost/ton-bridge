@@ -13,14 +13,15 @@ namespace(
             ethereum:   null,
             tonweb:     null,
             web3:       null,
+            ton:        null,
             contract:   null,
             oracles:    9,    // Default value if network not ready
             confirms:   12,
             chain_id:   null,
-            account:    null,
+            account:    { eth: null, ton: null },
             block:      0,
             gasprice:   0,
-            balance:    { eth: 0, toncoin: 0 },
+            balance:    { eth: 0, toncoin: 0, ton: 0 },
             interval:   {
                 network: 100,
                 block:   5000,
@@ -30,11 +31,16 @@ namespace(
                 provider.ethereum = window.ethereum || null;
                 if (!provider.ethereum) { return; }
                 provider.web3 = new Web3(provider.ethereum);
+                provider.ton  = window.ton || null;
 
                 // Need to use this updates method for other wallets (like Trust Wallet, Opera)
                 provider.updateNetwork();
                 provider.updateAccounts();
                 provider.updateBlock();
+
+                // Update ton data
+                provider.updateAccountsTon();
+                provider.updateBalanceTon();
 
                 // This is not working in Trust Wallet, Opera
                 //provider.web3.eth.subscribe('newBlockHeaders').on('data', provider.updateBlock);
@@ -62,15 +68,27 @@ namespace(
                 provider.web3.eth.getAccounts((error, result) => {
                     setTimeout(provider.updateAccounts, provider.interval.network);
                     if (error) return console.log(error);
-                    let account = (result[0] || null).toString().toLowerCase();
-                    if (provider.account !== account) {
-                        provider.account = account;
-                        provider.$emit(':update:account', provider.account);
+                    let account = (result[0] || '').toString().toLowerCase();
+                    if (provider.account.eth !== account) {
+                        provider.account.eth = account;
+                        provider.$emit(':update:account', provider.account.eth);
                         provider.updateBalance();
                         provider.updateBalanceContract();
                     }
-                    provider.connected = !!provider.account;
+                    provider.connected = !!provider.account.eth;
                 });
+            },
+
+            updateAccountsTon() {
+                setTimeout(provider.updateAccountsTon, provider.interval.network);
+                if (provider.ton) {
+                    provider.ton.send('ton_requestAccounts').then((accounts) => {
+                        if (provider.account.ton !== accounts[0]) {
+                            provider.account.ton = accounts[0];
+                            provider.$emit(':update:account', provider.account.eth);
+                        }
+                    });
+                }
             },
 
             updateBlock() {
@@ -102,21 +120,34 @@ namespace(
             },
 
             updateBalance() {
-                if (!provider.account) {
+                if (!provider.account.eth) {
                     provider.balance.eth = 0;
                 } else {
-                    provider.web3.eth.getBalance(provider.account).then((result) => {
+                    provider.web3.eth.getBalance(provider.account.eth).then((result) => {
                         provider.balance.eth = balanceNum(provider.web3.utils.fromWei(result, 'ether'), 6);
                         provider.$emit(':update:balance', provider.balance.eth);
                     }).catch((error) => {});
                 }
             },
 
+            updateBalanceTon() {
+                setTimeout(provider.updateBalanceTon, provider.interval.network);
+                if (provider.ton) {
+                    provider.ton.send('ton_getBalance').then((balance) => {
+                        balance = balanceNum(fromUnit(balance), 6);
+                        if (provider.balance.ton !== balance) {
+                            provider.balance.ton = balance;
+                            provider.$emit(':update:balance', provider.balance.ton);
+                        }
+                    });
+                }
+            },
+
             updateBalanceContract() {
-                if (!provider.contract || !provider.account) {
+                if (!provider.contract || !provider.account.eth) {
                     provider.balance.toncoin = 0;
                 } else {
-                    provider.contract.methods.balanceOf(provider.account).call().then((result) => {
+                    provider.contract.methods.balanceOf(provider.account.eth).call().then((result) => {
                         provider.balance.toncoin = balanceNum(provider.web3.utils.fromWei(result, 'nano'), 6);
                         provider.$emit(':update:balance', provider.balance.toncoin);
                     }).catch((error) => {});
@@ -149,8 +180,8 @@ namespace(
 
             connect() {
                 provider.connecting = true;
-                provider.ethereum.request({ method: 'eth_requestAccounts' }).then((accounts) => {
-                    provider.updateAccounts(accounts);
+                provider.ethereum.request({ method: 'eth_requestAccounts' }).then(() => {
+                    provider.updateAccounts();
                     provider.connecting = false;
                 }).catch(() => { provider.connecting = false; });
             },

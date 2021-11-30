@@ -1,11 +1,13 @@
+const NANOTONS      = 1e9;
 const BN            = TonWeb.utils.BN;
 const joinSignature = window.ethers.utils.joinSignature;
 const sha256        = window.ethers.utils.sha256;
 const getNumber     = (pair) => parseInt(pair[1], 16);
-const toUnit        = (n) => n * 1e9;
-const fromUnit      = (n) => n / 1e9;
+const toUnit        = (n) => n * NANOTONS;
+const fromUnit      = (n) => n / NANOTONS;
 const decToHex      = (dec) => '0x' + new BN(dec).toString(16);
 const balanceNum    = (n, d) => {
+    d = d || 6;
     n = (-(-n.toString())).toFixed(d + 1).toString();
     return -(-n.substr(0, n.length - 1));
 }
