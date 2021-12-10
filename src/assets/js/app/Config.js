@@ -7,7 +7,7 @@ namespace('app.Config', {
         wton_address:      '0x582d872a1b094fc48f5de31d3b73f2d9be47def1',
         bridge_address:    'Ef_dJMSh8riPi3BTUTtcxsWjG8RLKnLctNjAM4rw8NN-xWdr',
         collector_address: 'EQCuzvIOXLjH2tv35gY4tzhIvXCqZWDuK9kUhFGXKLImgxT5',
-        multisig_address:  'kf8rV4RD7BD-j_C-Xsu8FBO9BOOOwISjNPbBC8tcq688Gcmk',
+        multisig_address:  'kf87m7_QrVM4uXAPCDM4DuF9Rj5Rwa5nHubwiQG96JmyAo-S',
         toncenter_url:     'https://tonchain.co/api/v2/jsonRPC',
         explorer:          'https://etherscan.io/token/',
     },
