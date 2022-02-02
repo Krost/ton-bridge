@@ -1,1 +1,1 @@
-namespace('app.Version', { version: '0.2.4' });
+namespace('app.Version', { version: '0.2.5' });
