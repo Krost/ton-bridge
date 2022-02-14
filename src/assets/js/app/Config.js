@@ -8,7 +8,7 @@ namespace('app.Config', {
         bridge_address:    'Ef_dJMSh8riPi3BTUTtcxsWjG8RLKnLctNjAM4rw8NN-xWdr',
         collector_address: 'EQCuzvIOXLjH2tv35gY4tzhIvXCqZWDuK9kUhFGXKLImgxT5',
         multisig_address:  'kf87m7_QrVM4uXAPCDM4DuF9Rj5Rwa5nHubwiQG96JmyAo-S',
-        toncenter_url:     'https://tonchain.co/api/v2/jsonRPC',
+        toncenter_url:     'https://wallet.toncenter.com/api/v2/jsonRPC',
         explorer:          'https://etherscan.io/token/',
     },
 
@@ -34,7 +34,7 @@ namespace('app.Config', {
         bridge_address:    'Ef9NXAIQs12t2qIZ-sRZ26D977H65Ol6DQeXc5_gUNaUys5r',
         collector_address: 'EQAHI1vGuw7d4WG-CtfDrWqEPNtmUuKjKFEFeJmZaqqfWTvW',
         multisig_address:  'kf8OvX_5ynDgbp4iqJIvWudSEanWo0qAlOjhWHtga9u2Yo7j',
-        toncenter_url:     'https://tonchain.co/api/v2/jsonRPC',
+        toncenter_url:     'https://wallet.toncenter.com/api/v2/jsonRPC',
         explorer:          'https://bscscan.com/token/',
     },
 

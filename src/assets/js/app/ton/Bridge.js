@@ -66,6 +66,12 @@ namespace(
                 return Provider.confirms;
             },
 
+            getSendGasPrice() {
+                let price   = new BN(Provider.gasprice);
+                let percent = price.div(new BN('100')).mul(new BN('5'));
+                return price.add(percent).toString();
+            },
+
             async getSwap(myAmount, myToAddress, myCreateTime) {
                 if (Provider.tonweb === null) { return null; }
                 const transactions  = await Provider.tonweb.provider.getTransactions(Config.get().bridge_address, 40);
@@ -151,7 +157,8 @@ namespace(
 
                     Debug.log('voteForMinting', JSON.stringify(swap), JSON.stringify(signatures));
                     receipt = await Provider.contract.methods.voteForMinting(swap, signatures).send({
-                        from: Provider.account.eth
+                        from:     Provider.account.eth,
+                        gasPrice: bridge.getSendGasPrice(),
                     }).on('transactionHash', hash => {
                         Provider.$emit(':bridge:minted');
                     });
@@ -173,7 +180,10 @@ namespace(
                     receipt = await Provider.contract.methods.burn(amountUnit, {
                         workchain:    workchain,
                         address_hash: '0x' + hashPart,
-                    }).send({ from: fromAddress }).on('transactionHash', hash => {
+                    }).send({
+                        from:     fromAddress,
+                        gasPrice: bridge.getSendGasPrice(),
+                    }).on('transactionHash', hash => {
                         Provider.$emit(':bridge:burned');
                     });
                 } catch(e) {
